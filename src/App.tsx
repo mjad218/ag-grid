@@ -1,4 +1,4 @@
-import React, { RefObject, useRef, useState } from "react";
+import React, { MouseEventHandler, RefObject, useRef, useState } from "react";
 import "./App.css";
 import { AgGridReact } from "ag-grid-react";
 
@@ -6,33 +6,52 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef, GridApi } from "ag-grid-community";
 import { getFakeRowData, RowData } from "./helpers";
+import { faker } from "@faker-js/faker";
 const ActionsCell = (props: any) => {
-  const onDelete = () => {};
+  const id = props.data.id;
+  const onDelete: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.handleDelete(id);
+  };
 
-  const onDuplicate = () => {};
+  const onDuplicate: MouseEventHandler<HTMLButtonElement> = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    props.handleDuplicate(props.data);
+  };
 
   return (
     <>
-      <button>Delete</button>
-      <button>Duplicate</button>
+      <button onClick={onDelete}>Delete</button>
+      <button onClick={onDuplicate}>Duplicate</button>
     </>
   );
 };
 function App() {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const tableRef = useRef<any>(null);
+  const handleDelete = (id: string) => {
+    setRowData((prev) => prev.filter((row) => row.id !== id));
+  };
+
+  const handleDuplicate = (data: RowData) => {
+    const newRow = { ...data, id: faker.datatype.uuid() };
+    setRowData((prev) => [...prev, newRow]);
+  };
 
   const [columnDefs] = useState([
     { field: "id", checkboxSelection: true },
     { field: "lastName" },
     { field: "status" },
 
-    { field: "actions", cellRenderer: ActionsCell },
+    {
+      field: "actions",
+      cellRenderer: ActionsCell,
+      cellRendererParams: { handleDelete, handleDuplicate },
+    },
   ]);
 
-  const defaultColDefs = {
-    // checkboxSelection: true,
-  };
   const removeSelectedRows = () => {
     const selectedNodes = (tableRef.current.api as GridApi).getSelectedNodes();
     const newRows = rowData.filter((row) =>
@@ -55,7 +74,6 @@ function App() {
       <button onClick={removeSelectedRows}>Remove Selected</button>
       <AgGridReact
         ref={tableRef}
-        defaultColDef={defaultColDefs}
         rowData={rowData}
         rowSelection="multiple"
         columnDefs={columnDefs}

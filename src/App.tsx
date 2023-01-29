@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import "./App.css";
 import { AgGridReact } from "ag-grid-react";
 
@@ -12,26 +12,30 @@ import ActionsCell from "./components/ActionsCell";
 const App = () => {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const tableRef = useRef<any>(null);
-  const handleDelete = (id: string) => {
-    setRowData((prev) => prev.filter((row) => row.id !== id));
-  };
 
-  const handleDuplicate = (data: RowData) => {
+  const handleDelete = useCallback((id: string) => {
+    setRowData((prev) => prev.filter((row) => row.id !== id));
+  }, []);
+
+  const handleDuplicate = useCallback((data: RowData) => {
     const newRow = { ...data, id: faker.datatype.uuid() };
     setRowData((prev) => [...prev, newRow]);
-  };
+  }, []);
 
-  const [columnDefs] = useState([
-    { field: "id", checkboxSelection: true },
-    { field: "lastName" },
-    { field: "status" },
+  const columnDefs = useMemo(
+    () => [
+      { field: "id", checkboxSelection: true },
+      { field: "lastName" },
+      { field: "status" },
 
-    {
-      field: "actions",
-      cellRenderer: ActionsCell,
-      cellRendererParams: { handleDelete, handleDuplicate },
-    },
-  ]);
+      {
+        field: "actions",
+        cellRenderer: ActionsCell,
+        cellRendererParams: { handleDelete, handleDuplicate },
+      },
+    ],
+    []
+  );
 
   const removeSelectedRows = () => {
     const selectedNodes = (tableRef.current.api as GridApi).getSelectedNodes();

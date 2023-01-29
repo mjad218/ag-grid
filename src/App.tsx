@@ -6,7 +6,18 @@ import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
 import { ColDef, GridApi } from "ag-grid-community";
 import { getFakeRowData, RowData } from "./helpers";
+const ActionsCell = (props: any) => {
+  const onDelete = () => {};
 
+  const onDuplicate = () => {};
+
+  return (
+    <>
+      <button>Delete</button>
+      <button>Duplicate</button>
+    </>
+  );
+};
 function App() {
   const [rowData, setRowData] = useState<RowData[]>([]);
   const tableRef = useRef<any>(null);
@@ -16,7 +27,7 @@ function App() {
     { field: "lastName" },
     { field: "status" },
 
-    // { field: "actions" },
+    { field: "actions", cellRenderer: ActionsCell },
   ]);
 
   const defaultColDefs = {

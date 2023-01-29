@@ -4,23 +4,36 @@ import { AgGridReact } from "ag-grid-react";
 
 import "ag-grid-community/styles/ag-grid.css";
 import "ag-grid-community/styles/ag-theme-alpine.css";
+import { ColDef } from "ag-grid-community";
+import { getFakeRowData, RowData } from "./helpers";
 
 function App() {
-  const [rowData] = useState([
-    { make: "Toyota", model: "Celica", price: 35000 },
-    { make: "Ford", model: "Mondeo", price: 32000 },
-    { make: "Porsche", model: "Boxster", price: 72000 },
+  const [rowData, setRowData] = useState<RowData[]>([]);
+
+  //: ( id,name,last_name,status, actions )
+  const [columnDefs] = useState([
+    { field: "id" },
+    { field: "lastName" },
+    { field: "status" },
+    // { field: "actions" },
   ]);
 
-  const [columnDefs] = useState([
-    { field: "make" },
-    { field: "model" },
-    { field: "price" },
-  ]);
+  const onInsertRandom = () => {
+    const row = getFakeRowData();
+    setRowData((prev) => [...prev, row]);
+  };
+  const getRowId = (params: { data: { id: string } }) => {
+    return params.data.id;
+  };
 
   return (
-    <div className="ag-theme-alpine" style={{ height: 400, width: 600 }}>
-      <AgGridReact rowData={rowData} columnDefs={columnDefs}></AgGridReact>
+    <div className="ag-theme-alpine" style={{ height: 400 }}>
+      <button onClick={onInsertRandom}>Insert Random</button>
+      <AgGridReact
+        rowData={rowData}
+        columnDefs={columnDefs}
+        getRowId={getRowId}
+      ></AgGridReact>
     </div>
   );
 }

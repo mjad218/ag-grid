@@ -12,12 +12,16 @@ function App() {
   const tableRef = useRef<any>(null);
 
   const [columnDefs] = useState([
-    { field: "id" },
+    { field: "id", checkboxSelection: true },
     { field: "lastName" },
     { field: "status" },
+
     // { field: "actions" },
   ]);
 
+  const defaultColDefs = {
+    // checkboxSelection: true,
+  };
   const removeSelectedRows = () => {
     const selectedNodes = (tableRef.current.api as GridApi).getSelectedNodes();
     const newRows = rowData.filter((row) =>
@@ -40,6 +44,7 @@ function App() {
       <button onClick={removeSelectedRows}>Remove Selected</button>
       <AgGridReact
         ref={tableRef}
+        defaultColDef={defaultColDefs}
         rowData={rowData}
         rowSelection="multiple"
         columnDefs={columnDefs}

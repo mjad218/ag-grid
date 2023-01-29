@@ -22,21 +22,6 @@ const App = () => {
     setRowData((prev) => [...prev, newRow]);
   }, []);
 
-  const columnDefs = useMemo(
-    () => [
-      { field: "id", checkboxSelection: true },
-      { field: "lastName" },
-      { field: "status" },
-
-      {
-        field: "actions",
-        cellRenderer: ActionsCell,
-        cellRendererParams: { handleDelete, handleDuplicate },
-      },
-    ],
-    []
-  );
-
   const removeSelectedRows = () => {
     const selectedNodes = (tableRef.current.api as GridApi).getSelectedNodes();
     const newRows = rowData.filter((row) =>
@@ -52,6 +37,21 @@ const App = () => {
   const getRowId = (params: { data: { id: string } }) => {
     return params.data.id;
   };
+
+  const columnDefs = useMemo(
+    () => [
+      { field: "id", checkboxSelection: true },
+      { field: "lastName" },
+      { field: "status" },
+
+      {
+        field: "actions",
+        cellRenderer: ActionsCell,
+        cellRendererParams: { handleDelete, handleDuplicate },
+      },
+    ],
+    []
+  );
 
   return (
     <div className="ag-theme-alpine" style={{ height: 400 }}>
